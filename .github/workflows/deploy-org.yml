@@ -24,9 +24,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      # - name: Build Docker image from Dockerfile in organizations folder
-      #   run: docker build -t ghcr.io/${{ github.repository }}:latest organizations/
       
       - name: Push Docker image to GHCR
         uses: docker/build-push-action@v4
