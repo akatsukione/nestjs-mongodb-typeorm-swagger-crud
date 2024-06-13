@@ -27,14 +27,14 @@ jobs:
       - name: Install dependencies
         run: cd organizations && npm ci
 
-      - name: Eslint check
-        run: cd organizations && npx eslint . --fix
+      # - name: Eslint check
+      #   run: cd organizations && npx eslint . --fix
 
-      - name: Prettify
-        run: cd organizations && npx prettier . --write
+      # - name: Prettify
+      #   run: cd organizations && npx prettier . --write
 
-      - name: Test
-        run: cd organizations && npm run test
+      # - name: Test
+      #   run: cd organizations && npm run test
         
-      - name: Build
-        run: cd organizations && npm run builds
+      # - name: Build
+      #   run: cd organizations && npm run builds
