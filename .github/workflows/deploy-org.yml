@@ -24,17 +24,14 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
-      # - name: Create .env file from GitHub Secrets
-      #   run: echo '${{ secrets.DEV_ENV }}' > .env
 
-      - name: Build Docker image from Dockerfile in organizations folder
-        run: docker build -t ghcr.io/${{ github.repository }}:latest organizations/
+      # - name: Build Docker image from Dockerfile in organizations folder
+      #   run: docker build -t ghcr.io/${{ github.repository }}:latest organizations/
       
       - name: Push Docker image to GHCR
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: organizations/
           push: true
           tags: ghcr.io/${{ github.repository }}:latest
 
