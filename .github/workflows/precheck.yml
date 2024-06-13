@@ -1,0 +1,40 @@
+name: PRs testing
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - organizations/**
+
+jobs:
+  installation:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: cd organizations && npm ci
+
+      - name: Eslint check
+        run: cd organizations && npx eslint . --fix
+
+      - name: Prettify
+        run: cd organizations && npx prettier . --write
+
+      - name: Test
+        run: cd organizations && npm run test
+        
+      - name: Build
+        run: cd organizations && npm run builds

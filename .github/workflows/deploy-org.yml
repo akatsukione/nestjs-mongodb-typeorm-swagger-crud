@@ -1,0 +1,58 @@
+name: Deployment (DEV)
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - organizations/**
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      # - name: Create .env file from GitHub Secrets
+      #   run: echo '${{ secrets.DEV_ENV }}' > .env
+
+      - name: Build Docker image from Dockerfile in organizations folder
+        run: docker build -t ghcr.io/${{ github.repository }}:latest organizations/
+      
+      - name: Push Docker image to GHCR
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}:latest
+
+  # deploy:
+  #   needs: [build]
+
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Deploy to Remote Server
+  #       uses: appleboy/ssh-action@master
+  #       with:
+  #         host: ${{ secrets.DEV_SSH_HOST }}
+  #         username: ${{ secrets.DEV_SSH_USERNAME }}
+  #         password: ${{ secrets.DEV_SSH_PASSWORD }}
+  #         script: |
+  #           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+  #           docker rm $(docker stop $(docker ps -a -q --filter ancestor=ghcr.io/${{ github.repository }}))
+  #           docker rmi ghcr.io/${{ github.repository }}
+  #           docker pull ghcr.io/${{ github.repository }}:latest
+  #           docker run -d --name daniconfigs-api --network nginxproxymanager_default --restart unless-stopped ghcr.io/${{ github.repository }}:latest
